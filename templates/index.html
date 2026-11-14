@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="fw-bold mb-1">Job Application Dashboard</h2>
+<p class="text-muted">Manage and track your job applications.</p>
+
+<!-- Statistics -->
+<div class="row g-3 mt-3">
+
+    <div class="col-md-3">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body">
+                <h6>Total Applications</h6>
+                <h2>{{ total }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card bg-warning text-dark">
+            <div class="card-body">
+                <h6>Applied</h6>
+                <h2>{{ applied }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body">
+                <h6>Interviews</h6>
+                <h2>{{ interview }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body">
+                <h6>Selected</h6>
+                <h2>{{ selected }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Search -->
+<div class="d-flex justify-content-between mt-5 mb-3">
+    <h4>My Applications</h4>
+    <a href="{{ url_for('add_job') }}"
+       class="btn btn-primary">+ Add Application</a>
+</div>
+
+<form method="GET" action="/" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search"
+               class="form-control"
+               placeholder="Search company or job role..."
+               value="{{ search }}">
+
+        <button class="btn btn-dark" type="submit">
+            Search
+        </button>
+
+        <a href="/" class="btn btn-outline-secondary">
+            Clear
+        </a>
+    </div>
+</form>
+
+<!-- Applications Table -->
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Company</th>
+                    <th>Job Role</th>
+                    <th>Location</th>
+                    <th>Applied Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for job in jobs %}
+                <tr>
+
+                    <td class="fw-bold">{{ job.company }}</td>
+                    <td>{{ job.role }}</td>
+                    <td>{{ job.location or '-' }}</td>
+                    <td>{{ job.applied_date }}</td>
+
+                    <td>
+                        {% if job.status == 'Selected' %}
+                            <span class="badge bg-success">Selected</span>
+                        {% elif job.status == 'Rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% elif job.status == 'Interview' %}
+                            <span class="badge bg-info">Interview</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Applied</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{{ url_for('edit_job', job_id=job.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+
+                        <form method="POST"
+                              action="{{ url_for('delete_job', job_id=job.id) }}"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete this application?');">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+
+                        </form>
+                    </td>
+
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        No job applications found. Add your first application!
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="text-muted small mt-3">
+    Rejected applications: {{ rejected }}
+</div>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <div class="card shadow-sm p-4">
+
+            <h3 class="fw-bold mb-4">
+                {% if job %}Edit Application{% else %}Add New Application{% endif %}
+            </h3>
+
+            <form method="POST">
+
+                <div class="mb-3">
+                    <label class="form-label">Company Name *</label>
+                    <input type="text" name="company"
+                           class="form-control"
+                           placeholder="e.g. TCS"
+                           value="{{ job.company if job else '' }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Job Role *</label>
+                    <input type="text" name="role"
+                           class="form-control"
+                           placeholder="e.g. Python Developer"
+                           value="{{ job.role if job else '' }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location"
+                           class="form-control"
+                           placeholder="e.g. Indore"
+                           value="{{ job.location if job else '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Applied Date *</label>
+                    <input type="date" name="applied_date"
+                           class="form-control"
+                           value="{{ job.applied_date if job else '' }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Application Status</label>
+
+                    <select name="status" class="form-select">
+                        {% for status in ['Applied', 'Interview', 'Selected', 'Rejected'] %}
+                        <option value="{{ status }}"
+                            {% if job and job.status == status %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <textarea name="notes" class="form-control"
+                              rows="3"
+                              placeholder="Write additional information...">{{ job.notes if job else '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    {% if job %}Update Application{% else %}Save Application{% endif %}
+                </button>
+
+                <a href="/" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
