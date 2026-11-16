@@ -1,0 +1,287 @@
+
+{% extends "base.html" %}
+
+{% block title %}AI Resume Analyzer | JobTracker{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>AI Resume Analyzer</h2>
+        <p>Discover how closely your resume matches a job opportunity.</p>
+    </div>
+    <span class="application-count">Powered by Deep Learning</span>
+</div>
+
+<div class="ai-intro">
+    <div class="ai-intro-icon">✦</div>
+    <div>
+        <h4>Smart Resume Matching</h4>
+        <p>
+            Upload your resume and enter a job description.
+            Our pretrained AI model will analyze semantic similarity
+            and identify matching and missing skills.
+        </p>
+    </div>
+</div>
+
+<div class="form-page">
+
+    <div class="form-card">
+
+        <div class="form-card-heading">
+            <div class="form-heading-icon">✦</div>
+            <div>
+                <h4>Analyze Your Resume</h4>
+                <p>Provide your resume and job details below.</p>
+            </div>
+        </div>
+
+        <form method="POST"
+              action="{{ url_for('ai_match') }}"
+              enctype="multipart/form-data">
+
+            <div class="mb-4">
+                <label class="form-label">Upload Resume (PDF) *</label>
+
+                <input type="file"
+                       name="resume"
+                       class="form-control"
+                       accept=".pdf,application/pdf"
+                       required>
+
+                <small class="text-muted">
+                    Maximum file size: 5 MB
+                </small>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Job Title *</label>
+
+                <input type="text"
+                       name="job_title"
+                       class="form-control"
+                       placeholder="e.g. Python Developer"
+                       required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Job Description *</label>
+
+                <textarea name="job_description"
+                          class="form-control"
+                          rows="7"
+                          placeholder="Paste the complete job description here..."
+                          required></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    ✦ Analyze Resume
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+{% if analysis %}
+
+<div class="ai-result-section">
+
+    <div class="section-heading">
+        <div>
+            <h4>Resume Analysis Results</h4>
+            <p>AI-powered comparison of your resume and job description.</p>
+        </div>
+    </div>
+
+    <div class="match-score-card">
+
+        <div>
+            <span class="score-label">Resume Match Score</span>
+
+            <h1>{{ analysis.match_score }}%</h1>
+
+            <p>{{ analysis.job_title }}</p>
+        </div>
+
+        <div class="score-circle"
+             style="--score: {{ analysis.match_score }}%">
+            <span>{{ analysis.match_score }}%</span>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-md-6">
+
+            <div class="skill-result-card">
+
+                <h5>✓ Matched Skills</h5>
+
+                <p>Skills found in your resume and job description.</p>
+
+                <div class="skill-list">
+
+                    {% for skill in analysis.matched_skills %}
+
+                        <span class="skill-tag matched">
+                            {{ skill }}
+                        </span>
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            No matching skills identified.
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <div class="skill-result-card">
+
+                <h5>! Missing Skills</h5>
+
+                <p>Required skills not identified in your resume.</p>
+
+                <div class="skill-list">
+
+                    {% for skill in analysis.missing_skills %}
+
+                        <span class="skill-tag missing">
+                            {{ skill }}
+                        </span>
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            No missing skills identified.
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="skill-result-card mt-4">
+
+        <h5>Skills Found in Your Resume</h5>
+
+        <div class="skill-list">
+
+            {% for skill in analysis.resume_skills %}
+
+                <span class="skill-tag neutral">
+                    {{ skill }}
+                </span>
+
+            {% else %}
+
+                <span class="text-muted">
+                    No listed skills identified.
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <p class="ai-disclaimer">
+        Note: The match score represents semantic similarity,
+        not the probability of getting selected for a job.
+        Skill identification uses a predefined skill list.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+<!-- Previous analysis history -->
+
+<div class="applications-section mt-5">
+
+    <div class="section-heading">
+        <div>
+            <h4>Previous Resume Analyses</h4>
+            <p>Your latest AI analysis records.</p>
+        </div>
+    </div>
+
+    <div class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>RESUME</th>
+                        <th>JOB TITLE</th>
+                        <th>MATCH SCORE</th>
+                        <th>DATE</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in history %}
+
+                    <tr>
+                        <td>{{ item.resume_filename }}</td>
+
+                        <td>{{ item.job_title }}</td>
+
+                        <td>
+                            <span class="status-badge interview">
+                                {{ item.match_score }}%
+                            </span>
+                        </td>
+
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <h5>No analysis history yet</h5>
+                                <p>Your completed resume analyses will appear here.</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,7 @@
+
+Flask
+sentence-transformers
+torch
+pymupdf
+numpy
+scikit-learn

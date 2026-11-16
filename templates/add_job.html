@@ -1,86 +1,124 @@
 
 {% extends "base.html" %}
 
+{% block title %}
+{% if job %}Edit Application{% else %}Add Application{% endif %} | JobTracker
+{% endblock %}
+
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
+<div class="page-heading">
+    <div>
+        <h2>
+            {% if job %}Edit Application{% else %}Add New Application{% endif %}
+        </h2>
+        <p>Keep your job search information organized.</p>
+    </div>
 
-        <div class="card shadow-sm p-4">
+    <a href="{{ url_for('index') }}" class="btn btn-light">
+        ← Back to Dashboard
+    </a>
+</div>
 
-            <h3 class="fw-bold mb-4">
-                {% if job %}Edit Application{% else %}Add New Application{% endif %}
-            </h3>
+<div class="form-page">
 
-            <form method="POST">
+    <div class="form-card">
 
-                <div class="mb-3">
+        <div class="form-card-heading">
+            <div class="form-heading-icon">＋</div>
+            <div>
+                <h4>Application Details</h4>
+                <p>Enter information about the job opportunity.</p>
+            </div>
+        </div>
+
+        <form method="POST">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
                     <label class="form-label">Company Name *</label>
-                    <input type="text" name="company"
+                    <input type="text"
+                           name="company"
                            class="form-control"
                            placeholder="e.g. TCS"
                            value="{{ job.company if job else '' }}"
                            required>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-6">
                     <label class="form-label">Job Role *</label>
-                    <input type="text" name="role"
+                    <input type="text"
+                           name="role"
                            class="form-control"
                            placeholder="e.g. Python Developer"
                            value="{{ job.role if job else '' }}"
                            required>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-6">
                     <label class="form-label">Location</label>
-                    <input type="text" name="location"
+                    <input type="text"
+                           name="location"
                            class="form-control"
                            placeholder="e.g. Indore"
                            value="{{ job.location if job else '' }}">
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-6">
                     <label class="form-label">Applied Date *</label>
-                    <input type="date" name="applied_date"
+                    <input type="date"
+                           name="applied_date"
                            class="form-control"
                            value="{{ job.applied_date if job else '' }}"
                            required>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-12">
                     <label class="form-label">Application Status</label>
 
                     <select name="status" class="form-select">
+
                         {% for status in ['Applied', 'Interview', 'Selected', 'Rejected'] %}
+
                         <option value="{{ status }}"
                             {% if job and job.status == status %}selected{% endif %}>
                             {{ status }}
                         </option>
+
                         {% endfor %}
+
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Notes</label>
-                    <textarea name="notes" class="form-control"
-                              rows="3"
-                              placeholder="Write additional information...">{{ job.notes if job else '' }}</textarea>
+                <div class="col-12">
+                    <label class="form-label">Additional Notes</label>
+
+                    <textarea name="notes"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Add interview details, recruiter information or other notes...">{{ job.notes if job else '' }}</textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    {% if job %}Update Application{% else %}Save Application{% endif %}
-                </button>
+            </div>
 
-                <a href="/" class="btn btn-secondary">
+            <div class="form-actions">
+
+                <a href="{{ url_for('index') }}"
+                   class="btn btn-light">
                     Cancel
                 </a>
 
-            </form>
+                <button type="submit" class="btn btn-primary">
+                    {% if job %}Save Changes{% else %}Save Application{% endif %}
+                </button>
 
-        </div>
+            </div>
+
+        </form>
 
     </div>
+
 </div>
 
 {% endblock %}
